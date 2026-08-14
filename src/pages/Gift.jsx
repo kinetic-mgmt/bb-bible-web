@@ -14,7 +14,7 @@ export default function Gift() {
   const [params, setParams] = useSearchParams()
   const [shows, setShows] = useState([])
   const [session, setSession] = useState(null)
-  const [product, setProduct] = useState('all')
+  const [product, setProduct] = useState('')
   const [toEmail, setToEmail] = useState('')
   const [fromName, setFromName] = useState('')
   const [message, setMessage] = useState('')
@@ -25,13 +25,24 @@ export default function Gift() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session))
-    supabase.from('shows').select('slug,name').order('sort').then(({ data }) => setShows(data || []))
+    // only launched (public) shows are giftable — no selling passes for shows that aren't live yet
+    supabase.from('shows').select('slug,name').eq('visibility', 'public').order('sort').then(({ data }) => setShows(data || []))
   }, [])
 
-  const options = useMemo(() => [ALL, ...shows.map((s) => ({
-    product: s.slug, label: `${s.name} Season Pass`, price: priceFor(s.slug), blurb: `Everything for ${s.name}, all season.`,
-  }))], [shows])
-  const chosen = options.find((o) => o.product === product) || ALL
+  const options = useMemo(() => {
+    const showOpts = shows.map((s) => ({
+      product: s.slug, label: `${s.name} Season Pass`, price: priceFor(s.slug), blurb: `Everything for ${s.name}, all season.`,
+    }))
+    // Only offer All-Access once there are 2+ live shows to access.
+    return shows.length >= 2 ? [ALL, ...showOpts] : showOpts
+  }, [shows])
+
+  // default the selection to the first available option
+  useEffect(() => {
+    if (options.length && !options.find((o) => o.product === product)) setProduct(options[0].product)
+  }, [options]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const chosen = options.find((o) => o.product === product) || options[0]
 
   async function checkout(e) {
     e.preventDefault()
@@ -100,9 +111,9 @@ export default function Gift() {
 
         {err && <div style={{ color: '#B3261E', fontSize: 14 }}>{err}</div>}
 
-        <button className="btn" type="submit" disabled={busy}
-          style={{ background: 'linear-gradient(135deg, var(--rose), var(--rose-deep))', color: '#fff', opacity: busy ? .6 : 1, fontSize: 16, padding: '14px 24px' }}>
-          {busy ? 'Starting checkout…' : `Continue to payment · ${chosen.price}`}
+        <button className="btn" type="submit" disabled={busy || !chosen}
+          style={{ background: 'linear-gradient(135deg, var(--rose), var(--rose-deep))', color: '#fff', opacity: (busy || !chosen) ? .6 : 1, fontSize: 16, padding: '14px 24px' }}>
+          {busy ? 'Starting checkout…' : `Continue to payment · ${chosen?.price || ''}`}
         </button>
         <p className="muted" style={{ fontSize: 12, textAlign: 'center', margin: 0 }}>Secure checkout by Square. {session?.user?.email ? `Receipt to ${session.user.email}.` : ''}</p>
       </form>
