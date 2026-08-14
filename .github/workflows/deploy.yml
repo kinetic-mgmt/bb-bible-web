@@ -26,6 +26,10 @@ jobs:
           node-version: 20
       - run: npm ci
       - run: npm run build
+      # SPA fallback: GitHub Pages serves 404.html for unknown paths (e.g. /redeem,
+      # /gift). Making it a copy of index.html boots the app so the client router
+      # can handle the route — direct links and refreshes work.
+      - run: cp dist/index.html dist/404.html
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
