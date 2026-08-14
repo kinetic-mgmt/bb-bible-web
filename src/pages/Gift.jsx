@@ -5,7 +5,10 @@ import { supabase } from '../supabase.js'
 // Prices are the source of truth on the SERVER (gift-checkout edge fn). These are
 // just for display; the edge function re-derives the amount from the product.
 const ALL = { product: 'all', label: 'All-Access Season Pass', price: '$49.99', blurb: 'Every show, all season — the whole Bible.' }
-const SHOW_PRICE = '$9.99'
+// Per-show prices (must match the App Store / Play prices). Big Brother is the flagship.
+const SHOW_PRICES = { bigbrother: '$29.99' }
+const DEFAULT_SHOW_PRICE = '$9.99'
+const priceFor = (slug) => SHOW_PRICES[slug] || DEFAULT_SHOW_PRICE
 
 export default function Gift() {
   const [params, setParams] = useSearchParams()
@@ -26,7 +29,7 @@ export default function Gift() {
   }, [])
 
   const options = useMemo(() => [ALL, ...shows.map((s) => ({
-    product: s.slug, label: `${s.name} Season Pass`, price: SHOW_PRICE, blurb: `Everything for ${s.name}, all season.`,
+    product: s.slug, label: `${s.name} Season Pass`, price: priceFor(s.slug), blurb: `Everything for ${s.name}, all season.`,
   }))], [shows])
   const chosen = options.find((o) => o.product === product) || ALL
 
