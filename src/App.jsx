@@ -5,6 +5,8 @@ import Login from './pages/Login.jsx'
 import Home from './pages/Home.jsx'
 import Show from './pages/Show.jsx'
 import Talkers from './pages/Talkers.jsx'
+import Gift from './pages/Gift.jsx'
+import Redeem from './pages/Redeem.jsx'
 
 export default function App() {
   const [session, setSession] = useState(undefined) // undefined = loading
@@ -28,6 +30,8 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/show/:slug" element={<Show />} />
           <Route path="/talkers" element={<Talkers />} />
+          <Route path="/gift" element={<Gift />} />
+          <Route path="/redeem" element={<Redeem />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <div className="powered">Powered by Kinetic Management</div>
@@ -48,6 +52,7 @@ function Header({ email }) {
         <nav style={{ display: 'flex', gap: 18, marginLeft: 12 }}>
           <Link to="/" className="muted" style={{ textDecoration: 'none' }}>Shows</Link>
           <Link to="/talkers" className="muted" style={{ textDecoration: 'none' }}>Sarah's Talkers</Link>
+          <Link to="/gift" className="muted" style={{ textDecoration: 'none' }}>Gift a Pass</Link>
         </nav>
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
           <span className="muted" style={{ fontSize: 13 }}>{email}</span>
