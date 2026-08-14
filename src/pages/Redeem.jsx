@@ -43,7 +43,8 @@ export default function Redeem() {
           <div style={{ fontSize: 34 }}>🎁</div>
           <div className="serif" style={{ fontSize: 22, margin: '6px 0' }}>You're all set!</div>
           <p style={{ margin: '0 0 14px' }}><b>{result.label}</b> is now unlocked on your account — here on the web <i>and</i> in the Sarah's BB Bible app on your phone. Just log in with this same account.</p>
-          <Link to="/" className="btn" style={{ background: 'linear-gradient(135deg, var(--rose), var(--rose-deep))', color: '#fff', textDecoration: 'none' }}>Start watching along ›</Link>
+          {/* full reload so the app re-reads access and drops the paywall */}
+          <a href="/" className="btn" style={{ background: 'linear-gradient(135deg, var(--rose), var(--rose-deep))', color: '#fff', textDecoration: 'none' }}>Start watching along ›</a>
         </div>
       ) : (
         <>
