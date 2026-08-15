@@ -184,10 +184,19 @@ function bbStatusChip(hg) {
   return null
 }
 
+// Week fields are structured JSON: arrays of names, or objects like
+// {winner, compType, players}. Pull the human-readable bits out cleanly.
 function fmt(v) {
   if (v == null || v === '') return null
-  if (Array.isArray(v)) return v.join(' · ')
-  if (typeof v === 'object') return Object.values(v).filter(Boolean).join(' · ')
+  if (Array.isArray(v)) {
+    const parts = v.map((x) => (typeof x === 'string' ? x : (x?.name || x?.winner || ''))).filter(Boolean)
+    return parts.length ? parts.join(', ') : null
+  }
+  if (typeof v === 'object') {
+    if (v.winner || v.name) return [v.winner || v.name, v.compType].filter(Boolean).join(' · ')
+    const parts = Object.values(v).filter((x) => x && typeof x !== 'object')
+    return parts.length ? parts.join(' · ') : null
+  }
   return String(v)
 }
 
