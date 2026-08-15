@@ -50,16 +50,16 @@ export default function Show() {
 
       {tab === 'cast' && (
         cast.length === 0 ? <p className="muted">Cast hasn't been added yet.</p> :
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', gap: 12 }}>
           {cast.map((c) => (
-            <div className="card" key={c.id} style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-              <div style={{ width: 46, height: 46, borderRadius: '50%', background: 'var(--blush)', display: 'grid', placeItems: 'center', overflow: 'hidden', flex: '0 0 auto' }}>
+            <div className="card" key={c.id} style={{ display: 'flex', gap: 13, alignItems: 'center' }}>
+              <div style={{ width: 54, height: 54, borderRadius: '50%', background: 'var(--blush)', display: 'grid', placeItems: 'center', overflow: 'hidden', flex: '0 0 auto', border: '1px solid var(--border)' }}>
                 {c.image_url ? <img src={c.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> :
-                  <span className="serif" style={{ color: 'var(--rose-deep)' }}>{(c.name || '?').slice(0, 1)}</span>}
+                  <span className="serif" style={{ color: 'var(--rose-deep)', fontSize: 20 }}>{(c.name || '?').slice(0, 1)}</span>}
               </div>
-              <div>
-                <div style={{ fontWeight: 700 }}>{c.name}</div>
-                <div className="muted" style={{ fontSize: 12 }}>{c.subtitle || c.tag}</div>
+              <div style={{ minWidth: 0 }}>
+                <div className="serif" style={{ fontSize: 17 }}>{c.name}</div>
+                {(c.subtitle || c.tag) && <div className="label" style={{ marginTop: 3, color: 'var(--mauve)' }}>{c.subtitle || c.tag}</div>}
               </div>
             </div>
           ))}
@@ -71,8 +71,9 @@ export default function Show() {
         <div style={{ display: 'grid', gap: 12 }}>
           {episodes.map((e) => (
             <div className="card" key={e.episode_no}>
-              <div style={{ fontWeight: 700 }}>Episode {e.episode_no}{e.title ? ` · ${e.title}` : ''}</div>
-              {e.recap?.overview && <div className="muted" style={{ marginTop: 6, lineHeight: 1.5 }}>{e.recap.overview}</div>}
+              <div className="label">Episode {e.episode_no}{e.air_date ? ` · ${new Date(e.air_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}` : ''}</div>
+              {e.title && <div className="serif" style={{ fontSize: 21, margin: '5px 0 6px' }}>{e.title}</div>}
+              {e.recap?.overview && <div style={{ color: 'var(--ink)', marginTop: 4, lineHeight: 1.6, fontSize: 14.5 }}>{e.recap.overview}</div>}
             </div>
           ))}
         </div>
