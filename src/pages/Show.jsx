@@ -3,6 +3,8 @@ import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../supabase.js'
 import { PollCard, PredictionCard } from '../components/Vote.jsx'
 import Chat from '../components/Chat.jsx'
+import PowerRankings from '../components/PowerRankings.jsx'
+import News from '../components/News.jsx'
 
 // Big Brother is the original show — its data lives in its own tables
 // (houseguests, weeks, chat room `lobby`). The other shows use the generic
@@ -18,7 +20,7 @@ export default function Show() {
   const [recaps, setRecaps] = useState([])
   const [polls, setPolls] = useState([])
   const [predictions, setPredictions] = useState([])
-  const [tab, setTab] = useState('cast')
+  const [tab, setTab] = useState('overview')
 
   useEffect(() => {
     let live = true
@@ -57,7 +59,7 @@ export default function Show() {
       </div>
 
       <div style={{ display: 'flex', gap: 8, margin: '18px 0', flexWrap: 'wrap' }}>
-        {[['cast', `${castLabel}${cast.length ? ` (${cast.length})` : ''}`], ['recaps', `${recapLabel}${recaps.length ? ` (${recaps.length})` : ''}`], ['play', 'Play along'], ['chat', 'Chat']].map(([k, label]) => (
+        {[['overview', 'Overview'], ['cast', `${castLabel}${cast.length ? ` (${cast.length})` : ''}`], ['recaps', `${recapLabel}${recaps.length ? ` (${recaps.length})` : ''}`], ['play', 'Play along'], ['chat', 'Chat']].map(([k, label]) => (
           <button key={k} onClick={() => setTab(k)} className="btn" style={{
             padding: '8px 16px', fontSize: 13,
             background: tab === k ? 'linear-gradient(135deg, var(--rose), var(--rose-deep))' : 'transparent',
@@ -65,6 +67,28 @@ export default function Show() {
           }}>{label}</button>
         ))}
       </div>
+
+      {tab === 'overview' && (
+        <div style={{ display: 'grid', gap: 26 }}>
+          {(polls.length + predictions.length) > 0 && (
+            <section>
+              <div className="label" style={{ marginBottom: 10 }}>Play along</div>
+              <div style={{ display: 'grid', gap: 12 }}>
+                {polls.map((p) => <PollCard key={p.id} poll={p} />)}
+                {predictions.map((p) => <PredictionCard key={p.id} pred={p} />)}
+              </div>
+            </section>
+          )}
+          <section>
+            <div className="label" style={{ marginBottom: 10 }}>Power rankings</div>
+            <PowerRankings show={slug} />
+          </section>
+          <section>
+            <div className="label" style={{ marginBottom: 10 }}>The latest</div>
+            <News show={slug} limit={6} />
+          </section>
+        </div>
+      )}
 
       {tab === 'cast' && (
         cast.length === 0 ? <p className="muted">{isBB ? 'Houseguests' : 'Cast'} haven't been added yet.</p> :
