@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../supabase.js'
+import { PollCard, PredictionCard } from '../components/Vote.jsx'
 
 export default function Show() {
   const { slug } = useParams()
@@ -18,8 +19,8 @@ export default function Show() {
         supabase.from('shows').select('slug,name,season_label,accent').eq('slug', slug).maybeSingle(),
         supabase.from('show_cast').select('id,name,subtitle,tag,image_url,sort').eq('show', slug).order('sort'),
         supabase.from('show_episodes').select('episode_no,title,air_date,recap').eq('show', slug).eq('published', true).order('episode_no', { ascending: false }),
-        supabase.from('polls').select('id,question,options,active').eq('show', slug).eq('active', true),
-        supabase.from('predictions').select('id,question,options,active').eq('show', slug).eq('active', true),
+        supabase.from('polls').select('id,question,options,active,prize').eq('show', slug).eq('active', true),
+        supabase.from('predictions').select('id,question,options,active,prize').eq('show', slug).eq('active', true),
       ])
       if (!live) return
       setShow(sh); setCast(c || []); setEpisodes(ep || []); setPolls(pl || []); setPredictions(pr || [])
@@ -79,25 +80,10 @@ export default function Show() {
       {tab === 'play' && (
         (polls.length + predictions.length) === 0 ? <p className="muted">Nothing live to play right now.</p> :
         <div style={{ display: 'grid', gap: 12 }}>
-          {polls.map((p) => <Card key={p.id} label="Poll" q={p.question} options={p.options} />)}
-          {predictions.map((p) => <Card key={p.id} label="Prediction" q={p.question} options={p.options} />)}
-          <p className="muted" style={{ fontSize: 12 }}>Voting from the web is coming soon — for now, cast your vote in the app.</p>
+          {polls.map((p) => <PollCard key={p.id} poll={p} />)}
+          {predictions.map((p) => <PredictionCard key={p.id} pred={p} />)}
         </div>
       )}
-    </div>
-  )
-}
-
-function Card({ label, q, options }) {
-  return (
-    <div className="card">
-      <div className="label">{label}</div>
-      <div className="serif" style={{ fontSize: 18, margin: '4px 0 10px' }}>{q}</div>
-      <div style={{ display: 'grid', gap: 6 }}>
-        {(options || []).map((o, i) => (
-          <div key={i} style={{ border: '1px solid var(--border)', borderRadius: 999, padding: '8px 14px', fontSize: 14 }}>{o}</div>
-        ))}
-      </div>
     </div>
   )
 }
