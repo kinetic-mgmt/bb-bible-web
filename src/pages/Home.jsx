@@ -6,7 +6,9 @@ export default function Home() {
   const [shows, setShows] = useState(null)
 
   useEffect(() => {
-    supabase.from('shows').select('slug,name,season_label,accent,visibility').order('sort')
+    // only launched (public) shows appear — Sarah's in-app Launch button flips
+    // the other shows to public, and they show up here automatically.
+    supabase.from('shows').select('slug,name,season_label,accent,visibility').eq('visibility', 'public').order('sort')
       .then(({ data }) => setShows(data || []))
   }, [])
 
