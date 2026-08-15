@@ -99,4 +99,5 @@ a { color: var(--rose-deep); }
 /* Uppercase monospace label, like BB.mono live-feed tags */
 .label { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--rose-deep); font-weight: 700; }
 .muted { color: var(--muted); }
-.powered { font-family: 'JetBrains Mono', ui-monospace, monospace; text-align: center; color: var(--muted); font-size: 10.5px; letter-spacing: 1.8px; text-transform: uppercase; padding: 28px 0; }
+.powered { display: block; font-family: 'JetBrains Mono', ui-monospace, monospace; text-align: center; color: var(--muted); font-size: 10.5px; letter-spacing: 1.8px; text-transform: uppercase; padding: 28px 0; text-decoration: none; transition: color .15s ease; }
+a.powered:hover { color: var(--rose-deep); }

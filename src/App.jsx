@@ -44,7 +44,7 @@ export default function App() {
           <Route path="/redeem" element={<Redeem />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-        <div className="powered">Powered by Kinetic Management</div>
+        <a className="powered" href="https://kinetic-mgmt.com" target="_blank" rel="noopener noreferrer">Powered by Kinetic Management</a>
       </div>
     </div>
   )

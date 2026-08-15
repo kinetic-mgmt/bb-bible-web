@@ -51,7 +51,7 @@ export default function Login() {
           </button>
         </div>
       </div>
-      <div className="powered" style={{ marginTop: 8 }}>Powered by Kinetic Management</div>
+      <a className="powered" href="https://kinetic-mgmt.com" target="_blank" rel="noopener noreferrer" style={{ marginTop: 8 }}>Powered by Kinetic Management</a>
     </div>
   )
 }
