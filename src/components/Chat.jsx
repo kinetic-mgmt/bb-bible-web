@@ -22,9 +22,11 @@ export default function Chat({ room }) {
 
   useEffect(() => {
     let active = true
+    // newest 80, then flip to chronological — a busy room (BB `lobby` has 1000s)
+    // must show the latest, not the oldest.
     supabase.from('chat_messages').select('*').eq('room', room).eq('deleted', false)
-      .order('created_at', { ascending: true }).limit(80)
-      .then(({ data }) => { if (active) setMsgs(data || []) })
+      .order('created_at', { ascending: false }).limit(80)
+      .then(({ data }) => { if (active) setMsgs((data || []).slice().reverse()) })
 
     const ch = supabase.channel(`web-chat:${room}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages', filter: `room=eq.${room}` },
