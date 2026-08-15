@@ -35,8 +35,10 @@ export default function Show() {
   return (
     <div style={{ paddingTop: 22 }}>
       <Link to="/" className="muted" style={{ textDecoration: 'none', fontSize: 13 }}>‹ All shows</Link>
-      <h1 className="serif" style={{ fontSize: 30, margin: '10px 0 2px', borderLeft: `5px solid ${accent}`, paddingLeft: 12 }}>{show?.name || slug}</h1>
-      {show?.season_label && <div className="muted" style={{ paddingLeft: 17 }}>{show.season_label}</div>}
+      <div style={{ marginTop: 10, borderRadius: 20, padding: '24px 24px', color: '#fff', overflow: 'hidden', background: `linear-gradient(120deg, ${accent}, var(--berry))`, boxShadow: '0 16px 38px -22px rgba(158,43,80,.55)' }}>
+        <div className="serif" style={{ fontSize: 'clamp(30px, 7vw, 40px)', fontStyle: 'italic', color: '#fff', lineHeight: 1.05 }}>{show?.name || slug}</div>
+        {show?.season_label && <div className="label" style={{ color: 'rgba(255,255,255,.88)', marginTop: 8 }}>{show.season_label}</div>}
+      </div>
 
       <div style={{ display: 'flex', gap: 8, margin: '18px 0' }}>
         {[['cast', `Cast${cast.length ? ` (${cast.length})` : ''}`], ['recaps', `Recaps${episodes.length ? ` (${episodes.length})` : ''}`], ['play', 'Play along'], ['chat', 'Chat']].map(([k, label]) => (
