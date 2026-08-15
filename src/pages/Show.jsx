@@ -77,7 +77,7 @@ export default function Show() {
           {isBB && recaps[0] && (
             <section>
               <div className="label" style={{ marginBottom: 10 }}>This week</div>
-              <ThisWeek w={recaps[0]} />
+              <ThisWeek w={recaps[0]} cast={cast} />
             </section>
           )}
           {(polls.length + predictions.length) > 0 && (
@@ -200,23 +200,51 @@ function fmt(v) {
   return String(v)
 }
 
-// The current week's status at a glance — the "basic stuff" (HOH, noms, POV, have-nots).
-function ThisWeek({ w }) {
-  const items = [
-    ['HOH', fmt(w.hoh)],
-    ['Nominations', fmt(w.nominations_initial)],
-    ['POV', fmt(w.veto)],
-    ['Have-nots', fmt(w.have_nots)],
+// Pull the list of houseguest names out of a week field (array of names, or a
+// {winner} object).
+function names(v) {
+  if (v == null) return []
+  if (Array.isArray(v)) return v.map((x) => (typeof x === 'string' ? x : (x?.name || x?.winner || ''))).filter(Boolean)
+  if (typeof v === 'object') return [v.winner || v.name].filter(Boolean)
+  return [String(v)]
+}
+
+// The current week's status at a glance — HOH, noms, POV, have-nots — with the
+// houseguests' photos, like the app cover.
+function ThisWeek({ w, cast }) {
+  const byName = {}
+  for (const h of cast || []) if (h.name) byName[h.name.toLowerCase().trim()] = h
+
+  const Person = ({ name }) => {
+    const h = byName[(name || '').toLowerCase().trim()]
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ width: 44, height: 44, borderRadius: '50%', overflow: 'hidden', background: 'var(--card)', border: '1px solid var(--border)', display: 'grid', placeItems: 'center', flex: '0 0 auto' }}>
+          {h?.photo_url ? <img src={h.photo_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> :
+            <span className="serif" style={{ color: 'var(--rose-deep)' }}>{(name || '?').slice(0, 1)}</span>}
+        </div>
+        <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)' }}>{name}</span>
+      </div>
+    )
+  }
+
+  const sections = [
+    ['HOH', names(w.hoh), w.hoh?.compType],
+    ['Nominations', names(w.nominations_initial)],
+    ['POV', names(w.veto)],
+    ['Have-nots', names(w.have_nots)],
   ]
+
   return (
     <div className="card" style={{ background: 'var(--blush)', borderColor: 'var(--rose-deep)' }}>
       <div className="serif" style={{ fontSize: 22 }}>Week {w.week}</div>
       {w.dates && <div className="muted" style={{ fontSize: 12, marginTop: 2 }}>{w.dates}</div>}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 14, marginTop: 14 }}>
-        {items.map(([k, v]) => (
-          <div key={k}>
-            <div className="label" style={{ color: 'var(--rose-deep)' }}>{k}</div>
-            <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)', marginTop: 4, lineHeight: 1.4 }}>{v || '—'}</div>
+      <div style={{ display: 'grid', gap: 16, marginTop: 16 }}>
+        {sections.map(([label, list, extra]) => (
+          <div key={label}>
+            <div className="label" style={{ color: 'var(--rose-deep)', marginBottom: 8 }}>{label}{extra ? ` · ${extra}` : ''}</div>
+            {list.length === 0 ? <div className="muted" style={{ fontSize: 14 }}>—</div> :
+              <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap' }}>{list.map((n) => <Person key={n} name={n} />)}</div>}
           </div>
         ))}
       </div>
