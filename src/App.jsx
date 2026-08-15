@@ -60,8 +60,9 @@ function Header({ email, hasPass }) {
   return (
     <header style={{ borderBottom: '1px solid var(--border)', background: 'var(--card)', position: 'sticky', top: 0, zIndex: 10 }}>
       <div className="wrap" style={{ display: 'flex', alignItems: 'center', gap: 16, height: 62 }}>
-        <Link to="/" style={{ textDecoration: 'none', color: 'var(--ink)' }}>
-          <span className="serif" style={{ fontStyle: 'italic', fontSize: 22 }}>Sarah's <span style={{ color: 'var(--rose-deep)' }}>BB Bible</span></span>
+        <Link to="/" style={{ textDecoration: 'none', color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: 9 }}>
+          <img src="/sarah-logo.png" alt="" width="30" height="30" style={{ borderRadius: 8 }} />
+          <span className="serif" style={{ fontStyle: 'italic', fontSize: 21 }}>Sarah's <span style={{ color: 'var(--rose-deep)' }}>BB Bible</span></span>
         </Link>
         <nav style={{ display: 'flex', gap: 18, marginLeft: 12 }}>
           {hasPass ? (

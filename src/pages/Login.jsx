@@ -32,9 +32,10 @@ export default function Login() {
     <div style={{ display: 'grid', placeItems: 'center', minHeight: '100%', padding: 20 }}>
       <div className="card" style={{ width: '100%', maxWidth: 400 }}>
         <div style={{ textAlign: 'center', marginBottom: 18 }}>
-          <div className="serif" style={{ fontStyle: 'italic', fontSize: 16, color: 'var(--rose-deep)' }}>Sarah's</div>
-          <div className="serif" style={{ fontStyle: 'italic', fontSize: 34, fontWeight: 700 }}>BB Bible</div>
-          <div className="muted" style={{ fontSize: 13, marginTop: 6 }}>Your reality-TV companion, now on the web.</div>
+          <img src="/sarah-logo.png" alt="" width="64" height="64" style={{ borderRadius: 16, boxShadow: '0 12px 26px -16px rgba(158,43,80,.5)' }} />
+          <div className="serif" style={{ fontStyle: 'italic', fontSize: 18, color: 'var(--rose-deep)', marginTop: 10 }}>Sarah's</div>
+          <div className="serif" style={{ fontStyle: 'italic', fontSize: 40, lineHeight: 1, background: 'linear-gradient(120deg, var(--rose-deep), var(--berry))', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>BB Bible</div>
+          <div className="muted" style={{ fontSize: 13, marginTop: 10 }}>Your reality-TV companion, now on the web.</div>
         </div>
         <form onSubmit={submit} style={{ display: 'grid', gap: 12 }}>
           <input className="input" type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
@@ -50,6 +51,7 @@ export default function Login() {
           </button>
         </div>
       </div>
+      <div className="powered" style={{ marginTop: 8 }}>Powered by Kinetic Management</div>
     </div>
   )
 }

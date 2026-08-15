@@ -1,16 +1,27 @@
-/* Sarah's BB Bible — web. Brand palette mirrors the app (rose/ivory/plum/
-   rosegold). Light + dark (standing rule: always ship both). */
+/* Sarah's BB Bible — web. Palette, type and surfaces mirror the app's `BB` theme
+   (theme.dart): Playfair Display display italics, Inter body, JetBrains Mono
+   labels, Pinyon Script accent; blush + rose-gold on ivory. Light + dark. */
 :root {
-  --rose: #E8567F;
-  --rose-deep: #9E2B50;
-  --rosegold: #C79A82;
+  /* brand accents — identical in both themes (from BB.*) */
+  --rose: #F0A6A4;
+  --rose-deep: #D6436E;   /* app `rasp` — readable accent + deep end of gradients */
+  --berry: #9E2B50;
+  --rosegold: #C99A86;
   --rosegold-hi: #E7C2AC;
-  --ivory: #FBF6F2;
+  --sage: #7FA98C;
+
+  /* surfaces + text (light) */
+  --ivory: #FFF9F6;
   --white: #FFFFFF;
-  --plum: #3D2230;
-  --mauve: #8A6B78;
-  --line: #EADFE4;
-  --blush: #FBEAF0;
+  --plum: #4A2E38;
+  --mauve: #8A6B74;
+  --line: rgba(74, 46, 56, 0.12);
+  --blush: #FEE1E6;
+  --blush2: #FDEBEE;
+
+  --grad-1: #FFF9F6;
+  --grad-2: #FEEEF1;
+
   --bg: var(--ivory);
   --card: var(--white);
   --ink: var(--plum);
@@ -21,53 +32,71 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #171014;
-    --card: #221820;
-    --ink: #F3E9EE;
-    --muted: #B79AA8;
-    --border: #33232C;
-    --blush: #2A1B24;
+    --ivory: #171215; --white: #221B20; --plum: #F3E8EB; --mauve: #B69BA4;
+    --line: rgba(243, 232, 235, 0.14); --blush: #3A2A31; --blush2: #33242B;
+    --grad-1: #171215; --grad-2: #1E151A;
+    --bg: var(--ivory); --card: var(--white); --ink: var(--plum); --muted: var(--mauve); --border: var(--line);
   }
 }
 :root[data-theme='dark'] {
-  --bg: #171014; --card: #221820; --ink: #F3E9EE; --muted: #B79AA8; --border: #33232C; --blush: #2A1B24;
+  --ivory: #171215; --white: #221B20; --plum: #F3E8EB; --mauve: #B69BA4;
+  --line: rgba(243, 232, 235, 0.14); --blush: #3A2A31; --blush2: #33242B;
+  --grad-1: #171215; --grad-2: #1E151A;
+  --bg: var(--ivory); --card: var(--white); --ink: var(--plum); --muted: var(--mauve); --border: var(--line);
 }
 :root[data-theme='light'] {
-  --bg: var(--ivory); --card: var(--white); --ink: var(--plum); --muted: var(--mauve); --border: var(--line); --blush: #FBEAF0;
+  --ivory: #FFF9F6; --white: #FFFFFF; --plum: #4A2E38; --mauve: #8A6B74;
+  --line: rgba(74, 46, 56, 0.12); --blush: #FEE1E6; --blush2: #FDEBEE;
+  --grad-1: #FFF9F6; --grad-2: #FEEEF1;
+  --bg: var(--ivory); --card: var(--white); --ink: var(--plum); --muted: var(--mauve); --border: var(--line);
 }
 
 * { box-sizing: border-box; }
 html, body, #root { height: 100%; margin: 0; }
 body {
-  background: var(--bg);
+  background: linear-gradient(180deg, var(--grad-1), var(--grad-2)) fixed;
   color: var(--ink);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
-.serif { font-family: Georgia, 'Times New Roman', serif; }
+
+/* Type roles mirror BB.serif / BB.script / BB.mono */
+.serif { font-family: 'Playfair Display', Georgia, 'Times New Roman', serif; font-weight: 500; letter-spacing: -0.01em; }
+.script { font-family: 'Pinyon Script', cursive; color: var(--rose-deep); }
 a { color: var(--rose-deep); }
 
 .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   background: linear-gradient(135deg, var(--rose), var(--rose-deep));
   color: #fff; border: none; border-radius: 999px; padding: 12px 22px;
-  font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none;
+  font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none;
+  box-shadow: 0 10px 22px -12px rgba(214, 67, 110, 0.6);
+  transition: transform .14s ease, filter .14s ease;
 }
-.btn:disabled { opacity: .6; cursor: default; }
+.btn:hover { transform: translateY(-1px); filter: brightness(1.03); }
+.btn:disabled { opacity: .6; cursor: default; transform: none; }
 .btn-outline {
   background: transparent; color: var(--rose-deep);
-  border: 1px solid var(--rose-deep);
+  border: 1.5px solid var(--rose-deep); box-shadow: none;
 }
+
+/* SoftCard — rounded, soft rose-tinted shadow, hairline border */
 .card {
   background: var(--card); border: 1px solid var(--border);
-  border-radius: 16px; padding: 18px;
+  border-radius: 20px; padding: 18px;
+  box-shadow: 0 14px 34px -22px rgba(158, 43, 80, 0.28);
 }
+
 .input {
   width: 100%; background: var(--card); color: var(--ink);
-  border: 1px solid var(--border); border-radius: 10px;
-  padding: 12px 14px; font-size: 15px;
+  border: 1px solid var(--border); border-radius: 12px;
+  padding: 12px 14px; font-size: 15px; font-family: inherit;
 }
-.label { font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--rose-deep); font-weight: 700; }
+.input:focus { outline: none; border-color: var(--rose-deep); }
+
+/* Uppercase monospace label, like BB.mono live-feed tags */
+.label { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--rose-deep); font-weight: 700; }
 .muted { color: var(--muted); }
-.powered { text-align: center; color: var(--muted); font-size: 11px; letter-spacing: 1.6px; text-transform: uppercase; padding: 28px 0; }
+.powered { font-family: 'JetBrains Mono', ui-monospace, monospace; text-align: center; color: var(--muted); font-size: 10.5px; letter-spacing: 1.8px; text-transform: uppercase; padding: 28px 0; }
