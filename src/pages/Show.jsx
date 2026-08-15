@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../supabase.js'
 import { PollCard, PredictionCard } from '../components/Vote.jsx'
+import Chat from '../components/Chat.jsx'
 
 export default function Show() {
   const { slug } = useParams()
@@ -38,7 +39,7 @@ export default function Show() {
       {show?.season_label && <div className="muted" style={{ paddingLeft: 17 }}>{show.season_label}</div>}
 
       <div style={{ display: 'flex', gap: 8, margin: '18px 0' }}>
-        {[['cast', `Cast${cast.length ? ` (${cast.length})` : ''}`], ['recaps', `Recaps${episodes.length ? ` (${episodes.length})` : ''}`], ['play', 'Play along']].map(([k, label]) => (
+        {[['cast', `Cast${cast.length ? ` (${cast.length})` : ''}`], ['recaps', `Recaps${episodes.length ? ` (${episodes.length})` : ''}`], ['play', 'Play along'], ['chat', 'Chat']].map(([k, label]) => (
           <button key={k} onClick={() => setTab(k)} className="btn" style={{
             padding: '8px 16px', fontSize: 13,
             background: tab === k ? 'linear-gradient(135deg, var(--rose), var(--rose-deep))' : 'transparent',
@@ -84,6 +85,8 @@ export default function Show() {
           {predictions.map((p) => <PredictionCard key={p.id} pred={p} />)}
         </div>
       )}
+
+      {tab === 'chat' && <Chat room={`lobby:${slug}`} />}
     </div>
   )
 }
