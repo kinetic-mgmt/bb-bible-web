@@ -5,6 +5,10 @@ import { PollCard, PredictionCard } from '../components/Vote.jsx'
 import Chat from '../components/Chat.jsx'
 import PowerRankings from '../components/PowerRankings.jsx'
 import News from '../components/News.jsx'
+import Fantasy from '../components/Fantasy.jsx'
+import Feed from '../components/Feed.jsx'
+import Alliances from '../components/Alliances.jsx'
+import Comps from '../components/Comps.jsx'
 
 // Big Brother is the original show — its data lives in its own tables
 // (houseguests, weeks, chat room `lobby`). The other shows use the generic
@@ -59,7 +63,7 @@ export default function Show() {
       </div>
 
       <div style={{ display: 'flex', gap: 8, margin: '18px 0', flexWrap: 'wrap' }}>
-        {[['overview', 'Overview'], ['cast', `${castLabel}${cast.length ? ` (${cast.length})` : ''}`], ['recaps', `${recapLabel}${recaps.length ? ` (${recaps.length})` : ''}`], ['play', 'Play along'], ['chat', 'Chat']].map(([k, label]) => (
+        {[['overview', 'Overview'], ['cast', `${castLabel}${cast.length ? ` (${cast.length})` : ''}`], ['recaps', `${recapLabel}${recaps.length ? ` (${recaps.length})` : ''}`], ['play', 'Play along'], ...(isBB ? [['fantasy', 'Fantasy'], ['feed', 'Feed']] : []), ['chat', 'Chat']].map(([k, label]) => (
           <button key={k} onClick={() => setTab(k)} className="btn" style={{
             padding: '8px 16px', fontSize: 13,
             background: tab === k ? 'linear-gradient(135deg, var(--rose), var(--rose-deep))' : 'transparent',
@@ -83,6 +87,12 @@ export default function Show() {
             <div className="label" style={{ marginBottom: 10 }}>Power rankings</div>
             <PowerRankings show={slug} />
           </section>
+          {isBB && (
+            <section>
+              <div className="label" style={{ marginBottom: 10 }}>Alliances</div>
+              <Alliances show={slug} />
+            </section>
+          )}
           <section>
             <div className="label" style={{ marginBottom: 10 }}>The latest</div>
             <News show={slug} limit={6} />
@@ -117,17 +127,28 @@ export default function Show() {
       )}
 
       {tab === 'recaps' && (
-        recaps.length === 0 ? <p className="muted">Nothing posted here yet.</p> :
-        <div style={{ display: 'grid', gap: 12 }}>
-          {isBB
-            ? recaps.map((w) => <WeekCard key={w.week} w={w} />)
-            : recaps.map((e) => (
-              <div className="card" key={e.episode_no}>
-                <div className="label">Episode {e.episode_no}{e.air_date ? ` · ${new Date(e.air_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}` : ''}</div>
-                {e.title && <div className="serif" style={{ fontSize: 21, margin: '5px 0 6px' }}>{e.title}</div>}
-                {e.recap?.overview && <div style={{ color: 'var(--ink)', marginTop: 4, lineHeight: 1.6, fontSize: 14.5 }}>{e.recap.overview}</div>}
-              </div>
-            ))}
+        <div style={{ display: 'grid', gap: 22 }}>
+          {isBB && (
+            <section>
+              <div className="label" style={{ marginBottom: 10 }}>Competitions</div>
+              <Comps show={slug} />
+            </section>
+          )}
+          <section>
+            {isBB && <div className="label" style={{ marginBottom: 10 }}>Week by week</div>}
+            {recaps.length === 0 ? <p className="muted">Nothing posted here yet.</p> :
+              <div style={{ display: 'grid', gap: 12 }}>
+                {isBB
+                  ? recaps.map((w) => <WeekCard key={w.week} w={w} />)
+                  : recaps.map((e) => (
+                    <div className="card" key={e.episode_no}>
+                      <div className="label">Episode {e.episode_no}{e.air_date ? ` · ${new Date(e.air_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}` : ''}</div>
+                      {e.title && <div className="serif" style={{ fontSize: 21, margin: '5px 0 6px' }}>{e.title}</div>}
+                      {e.recap?.overview && <div style={{ color: 'var(--ink)', marginTop: 4, lineHeight: 1.6, fontSize: 14.5 }}>{e.recap.overview}</div>}
+                    </div>
+                  ))}
+              </div>}
+          </section>
         </div>
       )}
 
@@ -138,6 +159,10 @@ export default function Show() {
           {predictions.map((p) => <PredictionCard key={p.id} pred={p} />)}
         </div>
       )}
+
+      {tab === 'fantasy' && <Fantasy />}
+
+      {tab === 'feed' && <Feed show={slug} />}
 
       {tab === 'chat' && <Chat room={chatRoom} />}
     </div>
