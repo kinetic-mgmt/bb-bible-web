@@ -74,6 +74,12 @@ export default function Show() {
 
       {tab === 'overview' && (
         <div style={{ display: 'grid', gap: 26 }}>
+          {isBB && recaps[0] && (
+            <section>
+              <div className="label" style={{ marginBottom: 10 }}>This week</div>
+              <ThisWeek w={recaps[0]} />
+            </section>
+          )}
           {(polls.length + predictions.length) > 0 && (
             <section>
               <div className="label" style={{ marginBottom: 10 }}>Play along</div>
@@ -183,6 +189,30 @@ function fmt(v) {
   if (Array.isArray(v)) return v.join(' · ')
   if (typeof v === 'object') return Object.values(v).filter(Boolean).join(' · ')
   return String(v)
+}
+
+// The current week's status at a glance — the "basic stuff" (HOH, noms, POV, have-nots).
+function ThisWeek({ w }) {
+  const items = [
+    ['HOH', fmt(w.hoh)],
+    ['Nominations', fmt(w.nominations_initial)],
+    ['POV', fmt(w.veto)],
+    ['Have-nots', fmt(w.have_nots)],
+  ]
+  return (
+    <div className="card" style={{ background: 'var(--blush)', borderColor: 'var(--rose-deep)' }}>
+      <div className="serif" style={{ fontSize: 22 }}>Week {w.week}</div>
+      {w.dates && <div className="muted" style={{ fontSize: 12, marginTop: 2 }}>{w.dates}</div>}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 14, marginTop: 14 }}>
+        {items.map(([k, v]) => (
+          <div key={k}>
+            <div className="label" style={{ color: 'var(--rose-deep)' }}>{k}</div>
+            <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)', marginTop: 4, lineHeight: 1.4 }}>{v || '—'}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 function WeekCard({ w }) {
