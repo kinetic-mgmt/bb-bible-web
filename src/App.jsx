@@ -7,6 +7,7 @@ import Show from './pages/Show.jsx'
 import Talkers from './pages/Talkers.jsx'
 import Gift from './pages/Gift.jsx'
 import Redeem from './pages/Redeem.jsx'
+import Dms from './pages/Dms.jsx'
 
 export default function App() {
   const [session, setSession] = useState(undefined) // undefined = loading
@@ -37,6 +38,7 @@ export default function App() {
           {hasPass && <Route path="/" element={<Home />} />}
           {hasPass && <Route path="/show/:slug" element={<Show />} />}
           {hasPass && <Route path="/talkers" element={<Talkers />} />}
+          {hasPass && <Route path="/messages" element={<Dms />} />}
           {!hasPass && <Route path="/" element={<Paywall email={session.user?.email} />} />}
           <Route path="/gift" element={<Gift />} />
           <Route path="/redeem" element={<Redeem />} />
@@ -66,6 +68,7 @@ function Header({ email, hasPass }) {
             <>
               <Link to="/" className="muted" style={{ textDecoration: 'none' }}>Shows</Link>
               <Link to="/talkers" className="muted" style={{ textDecoration: 'none' }}>Sarah's Talkers</Link>
+              <Link to="/messages" className="muted" style={{ textDecoration: 'none' }}>Messages</Link>
               <Link to="/gift" className="muted" style={{ textDecoration: 'none' }}>Gift a Pass</Link>
             </>
           ) : (
