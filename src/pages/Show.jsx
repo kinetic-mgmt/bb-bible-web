@@ -9,6 +9,7 @@ import Fantasy from '../components/Fantasy.jsx'
 import Feed from '../components/Feed.jsx'
 import Alliances from '../components/Alliances.jsx'
 import Comps from '../components/Comps.jsx'
+import CompGames from '../components/CompGames.jsx'
 
 // Big Brother is the original show — its data lives in its own tables
 // (houseguests, weeks, chat room `lobby`). The other shows use the generic
@@ -134,6 +135,12 @@ export default function Show() {
 
       {tab === 'recaps' && (
         <div style={{ display: 'grid', gap: 22 }}>
+          {isBB && (
+            <section>
+              <div className="label" style={{ marginBottom: 10 }}>Comp games — crossed off as they're played</div>
+              <CompGames show={slug} />
+            </section>
+          )}
           {isBB && (
             <section>
               <div className="label" style={{ marginBottom: 10 }}>Competitions</div>
