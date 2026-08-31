@@ -1,60 +1,46 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import { supabase } from '../supabase.js'
 
-// Prices are the source of truth on the SERVER (gift-checkout edge fn). These are
-// just for display; the edge function re-derives the amount from the product.
-const ALL = { product: 'all', label: 'All-Access Season Pass', price: '$49.99', blurb: 'Every show, all season — the whole Bible.' }
-// Per-show prices (must match the App Store / Play prices). Big Brother is the flagship.
-const SHOW_PRICES = { bigbrother: '$29.99' }
-const DEFAULT_SHOW_PRICE = '$9.99'
-const priceFor = (slug) => SHOW_PRICES[slug] || DEFAULT_SHOW_PRICE
+// Passes are gone. You can gift all-access (Lifetime or a Month) or a Coins bundle.
+// Prices are the source of truth on the SERVER (gift-checkout edge fn); these are
+// just for display and the function re-derives the amount from the product.
+const OPTIONS = [
+  { product: 'lifetime',   label: 'Lifetime — All Access', price: '$149.99', blurb: 'Every show, forever. The whole Bible, always.' },
+  { product: 'month',      label: '1 Month — All Access',  price: '$9.99',   blurb: 'Everything unlocked for 30 days.' },
+  { product: 'coins_500',  label: '500 Coins',             price: '$9.99',   blurb: 'Coins to send gifts during the lives.' },
+  { product: 'coins_1200', label: '1,200 Coins',           price: '$19.99',  blurb: 'A bigger stash of gifting coins.' },
+  { product: 'coins_6500', label: '6,500 Coins',           price: '$49.99',  blurb: 'The big-baller bundle — best value.' },
+]
 
 export default function Gift() {
   const [params, setParams] = useSearchParams()
-  const [shows, setShows] = useState([])
-  const [session, setSession] = useState(null)
-  const [product, setProduct] = useState('')
-  const [toEmail, setToEmail] = useState('')
+  const [product, setProduct] = useState(OPTIONS[0].product)
+  const [recipient, setRecipient] = useState('')
   const [fromName, setFromName] = useState('')
   const [message, setMessage] = useState('')
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
 
   const doneCode = params.get('code') // returned here after Square checkout
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session))
-    // only launched (public) shows are giftable — no selling passes for shows that aren't live yet
-    supabase.from('shows').select('slug,name').eq('visibility', 'public').order('sort').then(({ data }) => setShows(data || []))
-  }, [])
-
-  const options = useMemo(() => {
-    const showOpts = shows.map((s) => ({
-      product: s.slug, label: `${s.name} Season Pass`, price: priceFor(s.slug), blurb: `Everything for ${s.name}, all season.`,
-    }))
-    // Only offer All-Access once there are 2+ live shows to access.
-    return shows.length >= 2 ? [ALL, ...showOpts] : showOpts
-  }, [shows])
-
-  // default the selection to the first available option
-  useEffect(() => {
-    if (options.length && !options.find((o) => o.product === product)) setProduct(options[0].product)
-  }, [options]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  const chosen = options.find((o) => o.product === product) || options[0]
+  const chosen = OPTIONS.find((o) => o.product === product) || OPTIONS[0]
 
   async function checkout(e) {
     e.preventDefault()
-    setErr(''); setBusy(true)
+    setErr('')
+    if (!recipient.trim()) { setErr("Add who it's for — their email or @handle."); return }
+    setBusy(true)
     const { data, error } = await supabase.functions.invoke('gift-checkout', {
-      body: { product, recipient_email: toEmail || null, from_name: fromName || null, message: message || null },
+      body: { product, recipient: recipient.trim(), from_name: fromName || null, message: message || null },
     })
     setBusy(false)
     if (error || data?.error) {
-      setErr(data?.error === 'not_configured'
-        ? 'Gift checkout is being set up — payments go live shortly. Hang tight!'
-        : (data?.error || error?.message || 'Could not start checkout.'))
+      const map = {
+        not_configured: 'Gift checkout is being set up — payments go live shortly. Hang tight!',
+        recipient_required: "Add who it's for — their email or @handle.",
+        not_available: 'That gift isn\'t available. Pick another option.',
+      }
+      setErr(map[data?.error] || data?.error || error?.message || 'Could not start checkout.')
       return
     }
     if (data?.checkout_url) window.location.href = data.checkout_url
@@ -65,16 +51,16 @@ export default function Gift() {
   return (
     <div style={{ maxWidth: 560, margin: '36px auto 0' }}>
       <div className="label">Gift</div>
-      <h1 className="serif" style={{ fontSize: 32, margin: '4px 0 6px' }}>Gift a season pass</h1>
+      <h1 className="serif" style={{ fontSize: 32, margin: '4px 0 6px' }}>Gift the Bible</h1>
       <p className="muted" style={{ marginTop: 0 }}>
-        Treat a friend to the watch-along. They'll get a code to unlock it on their own account — on the web and in the app.
+        Treat a friend to all-access or a stack of coins. They claim it on their own account — on the web and in the app.
       </p>
 
       <form onSubmit={checkout} style={{ display: 'grid', gap: 18, marginTop: 20 }}>
         <div>
-          <div className="label" style={{ marginBottom: 8 }}>Choose the pass</div>
+          <div className="label" style={{ marginBottom: 8 }}>Choose a gift</div>
           <div style={{ display: 'grid', gap: 10 }}>
-            {options.map((o) => (
+            {OPTIONS.map((o) => (
               <label key={o.product} className="card" style={{
                 display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer',
                 borderColor: product === o.product ? 'var(--rose-deep)' : 'var(--border)',
@@ -93,9 +79,9 @@ export default function Gift() {
         </div>
 
         <div>
-          <div className="label" style={{ marginBottom: 6 }}>Recipient's email <span className="muted" style={{ textTransform: 'none', fontWeight: 400 }}>(optional — we'll email them the code)</span></div>
-          <input className="input" type="email" value={toEmail} onChange={(e) => setToEmail(e.target.value)} placeholder="friend@email.com" />
-          <p className="muted" style={{ fontSize: 12, margin: '6px 2px 0' }}>Leave blank and you'll get the code to send yourself.</p>
+          <div className="label" style={{ marginBottom: 6 }}>Who's it for? <span style={{ color: 'var(--rose-deep)' }}>*</span></div>
+          <input className="input" value={recipient} onChange={(e) => setRecipient(e.target.value)} placeholder="friend@email.com  or  @theirhandle" required />
+          <p className="muted" style={{ fontSize: 12, margin: '6px 2px 0' }}>Their email or in-app @handle. We'll tie the gift code to them.</p>
         </div>
 
         <div style={{ display: 'grid', gap: 12, gridTemplateColumns: '1fr' }}>
@@ -111,11 +97,11 @@ export default function Gift() {
 
         {err && <div style={{ color: '#B3261E', fontSize: 14 }}>{err}</div>}
 
-        <button className="btn" type="submit" disabled={busy || !chosen}
-          style={{ background: 'linear-gradient(135deg, var(--rose), var(--rose-deep))', color: '#fff', opacity: (busy || !chosen) ? .6 : 1, fontSize: 16, padding: '14px 24px' }}>
+        <button className="btn" type="submit" disabled={busy}
+          style={{ background: 'linear-gradient(135deg, var(--rose), var(--rose-deep))', color: '#fff', opacity: busy ? .6 : 1, fontSize: 16, padding: '14px 24px' }}>
           {busy ? 'Starting checkout…' : `Continue to payment · ${chosen?.price || ''}`}
         </button>
-        <p className="muted" style={{ fontSize: 12, textAlign: 'center', margin: 0 }}>Secure checkout by Square. {session?.user?.email ? `Receipt to ${session.user.email}.` : ''}</p>
+        <p className="muted" style={{ fontSize: 12, textAlign: 'center', margin: 0 }}>Secure checkout by Square.</p>
       </form>
     </div>
   )
@@ -126,12 +112,13 @@ function GiftDone({ code, onNew }) {
   const link = `${window.location.origin}/redeem?code=${code}`
 
   async function load() {
-    const { data } = await supabase.from('gift_passes').select('label,status,recipient_email').eq('code', code).maybeSingle()
+    const { data } = await supabase.from('gift_passes').select('label,status,recipient_email,recipient_handle').eq('code', code).maybeSingle()
     setGift(data || null)
   }
-  useEffect(() => { load() }, [code])
+  useEffect(() => { load() }, [code]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const paid = gift?.status === 'paid' || gift?.status === 'redeemed'
+  const forWho = gift?.recipient_email || (gift?.recipient_handle ? `@${gift.recipient_handle}` : null)
   const copy = () => navigator.clipboard?.writeText(link)
 
   return (
@@ -146,10 +133,8 @@ function GiftDone({ code, onNew }) {
           </>
         ) : (
           <>
-            <p style={{ margin: '0 0 4px' }}><b>{gift.label}</b> is ready to send.</p>
-            {gift.recipient_email
-              ? <p className="muted" style={{ marginTop: 0 }}>We emailed the code to <b>{gift.recipient_email}</b>. You can also share the link below.</p>
-              : <p className="muted" style={{ marginTop: 0 }}>Send this to your friend — they claim it on their own account.</p>}
+            <p style={{ margin: '0 0 4px' }}><b>{gift.label}</b> is ready to send{forWho ? <> to <b>{forWho}</b></> : ''}.</p>
+            <p className="muted" style={{ marginTop: 0 }}>Send them this code — they claim it on their own account.</p>
             <div style={{ background: 'var(--card)', border: '1px dashed var(--rose-deep)', borderRadius: 10, padding: '12px 14px', margin: '10px 0' }}>
               <div className="serif" style={{ fontSize: 22, letterSpacing: 2, textAlign: 'center' }}>{code}</div>
             </div>

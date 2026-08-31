@@ -70,12 +70,12 @@ function Header({ email, hasPass }) {
               <Link to="/" className="muted" style={{ textDecoration: 'none' }}>Shows</Link>
               <Link to="/talkers" className="muted" style={{ textDecoration: 'none' }}>Sarah's Talkers</Link>
               <Link to="/messages" className="muted" style={{ textDecoration: 'none' }}>Messages</Link>
-              <Link to="/gift" className="muted" style={{ textDecoration: 'none' }}>Gift a Pass</Link>
+              <Link to="/gift" className="muted" style={{ textDecoration: 'none' }}>Gift</Link>
             </>
           ) : (
             <>
               <Link to="/redeem" className="muted" style={{ textDecoration: 'none' }}>Redeem a code</Link>
-              <Link to="/gift" className="muted" style={{ textDecoration: 'none' }}>Gift a Pass</Link>
+              <Link to="/gift" className="muted" style={{ textDecoration: 'none' }}>Gift</Link>
             </>
           )}
         </nav>
@@ -88,22 +88,22 @@ function Header({ email, hasPass }) {
   )
 }
 
-// Free-plan wall: a season pass is required to use the web companion. Redeem or buy to unlock.
+// Free-plan wall: all-access is required to use the web companion. Redeem or buy to unlock.
 function Paywall({ email }) {
   return (
     <div style={{ maxWidth: 520, margin: '48px auto 0', textAlign: 'center' }}>
       <div style={{ fontSize: 40 }}>🔒</div>
-      <h1 className="serif" style={{ fontSize: 32, margin: '10px 0 6px' }}>This is for pass holders</h1>
+      <h1 className="serif" style={{ fontSize: 32, margin: '10px 0 6px' }}>Unlock the full Bible</h1>
       <p className="muted" style={{ marginTop: 0 }}>
-        The web companion — every show's recaps, play-along, fantasy and rankings — is included with any season pass.
-        Redeem a gift someone sent you, or grab a pass to unlock everything.
+        The web companion — every show's recaps, play-along, fantasy and rankings — comes with all-access.
+        Redeem a gift someone sent you, or get all-access to unlock everything.
       </p>
       <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginTop: 22 }}>
         <Link to="/redeem" className="btn" style={{ background: 'linear-gradient(135deg, var(--rose), var(--rose-deep))', color: '#fff', textDecoration: 'none' }}>Redeem a gift code</Link>
-        <Link to="/gift" className="btn btn-outline" style={{ textDecoration: 'none' }}>Get a season pass</Link>
+        <Link to="/gift" className="btn btn-outline" style={{ textDecoration: 'none' }}>Give a gift</Link>
       </div>
       <p className="muted" style={{ fontSize: 12, marginTop: 22 }}>
-        Already bought in the app? Your pass is tied to your account — make sure you're logged in here with the same one{email ? <> (<b>{email}</b>)</> : ''}.
+        Already a member in the app? Your access is tied to your account — make sure you're logged in here with the same one{email ? <> (<b>{email}</b>)</> : ''}.
       </p>
     </div>
   )

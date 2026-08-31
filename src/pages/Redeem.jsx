@@ -36,19 +36,19 @@ export default function Redeem() {
   return (
     <div style={{ maxWidth: 460, margin: '40px auto 0' }}>
       <div className="label">Gift</div>
-      <h1 className="serif" style={{ fontSize: 30, margin: '4px 0 6px' }}>Claim your season pass</h1>
+      <h1 className="serif" style={{ fontSize: 30, margin: '4px 0 6px' }}>Claim your gift</h1>
 
       {state === 'done' ? (
         <div className="card" style={{ borderColor: 'var(--rose-deep)', background: 'var(--blush)', marginTop: 18 }}>
           <div style={{ fontSize: 34 }}>🎁</div>
           <div className="serif" style={{ fontSize: 22, margin: '6px 0' }}>You're all set!</div>
-          <p style={{ margin: '0 0 14px' }}><b>{result.label}</b> is now unlocked on your account — here on the web <i>and</i> in the Sarah's BB Bible app on your phone. Just log in with this same account.</p>
+          <p style={{ margin: '0 0 14px' }}><b>{result.label}</b> is now on your account — here on the web <i>and</i> in the Sarah's BB Bible app on your phone. Just log in with this same account.</p>
           {/* full reload so the app re-reads access and drops the paywall */}
           <a href="/" className="btn" style={{ background: 'linear-gradient(135deg, var(--rose), var(--rose-deep))', color: '#fff', textDecoration: 'none' }}>Start watching along ›</a>
         </div>
       ) : (
         <>
-          <p className="muted" style={{ marginTop: 0 }}>Someone gifted you a pass. Enter the code below to unlock it on your account.</p>
+          <p className="muted" style={{ marginTop: 0 }}>Someone sent you a gift. Enter the code below to add it to your account.</p>
           <form onSubmit={redeem} style={{ display: 'grid', gap: 12, marginTop: 8 }}>
             <input
               className="input" value={code} autoFocus
@@ -63,7 +63,7 @@ export default function Redeem() {
             </button>
           </form>
           <p className="muted" style={{ fontSize: 12, marginTop: 14 }}>
-            Want to gift one instead? <Link to="/gift" style={{ color: 'var(--rose-deep)' }}>Send a pass ›</Link>
+            Want to gift one instead? <Link to="/gift" style={{ color: 'var(--rose-deep)' }}>Send a gift ›</Link>
           </p>
         </>
       )}
