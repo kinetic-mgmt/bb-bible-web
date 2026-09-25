@@ -8,10 +8,12 @@ import Talkers from './pages/Talkers.jsx'
 import Gift from './pages/Gift.jsx'
 import Redeem from './pages/Redeem.jsx'
 import Dms from './pages/Dms.jsx'
+import Editor from './pages/Editor.jsx'
 
 export default function App() {
   const [session, setSession] = useState(undefined) // undefined = loading
   const [access, setAccess] = useState(undefined)    // undefined = loading
+  const [isAdmin, setIsAdmin] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session))
@@ -20,8 +22,9 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    if (!session) { setAccess(undefined); return }
+    if (!session) { setAccess(undefined); setIsAdmin(false); return }
     supabase.rpc('my_access').then(({ data }) => setAccess(data || { all_access: false, shows: [] }))
+    supabase.rpc('is_admin').then(({ data }) => setIsAdmin(data === true))
   }, [session])
 
   if (session === undefined) return <Splash />
@@ -32,13 +35,14 @@ export default function App() {
 
   return (
     <div>
-      <Header email={session.user?.email} hasPass={hasPass} />
+      <Header email={session.user?.email} hasPass={hasPass} isAdmin={isAdmin} />
       <div className="wrap" style={{ paddingBottom: 40 }}>
         <Routes>
           {hasPass && <Route path="/" element={<Home />} />}
           {hasPass && <Route path="/show/:slug" element={<Show />} />}
           {hasPass && <Route path="/talkers" element={<Talkers />} />}
           {hasPass && <Route path="/messages" element={<Dms />} />}
+          {isAdmin && <Route path="/editor" element={<Editor />} />}
           {!hasPass && <Route path="/" element={<Paywall email={session.user?.email} />} />}
           <Route path="/gift" element={<Gift />} />
           <Route path="/redeem" element={<Redeem />} />
@@ -54,7 +58,7 @@ function Splash() {
   return <div style={{ display: 'grid', placeItems: 'center', height: '100%' }}><span className="muted">Loading…</span></div>
 }
 
-function Header({ email, hasPass }) {
+function Header({ email, hasPass, isAdmin }) {
   const nav = useNavigate()
   const logout = async () => { await supabase.auth.signOut({ scope: 'local' }); nav('/') }
   return (
@@ -71,11 +75,13 @@ function Header({ email, hasPass }) {
               <Link to="/talkers" className="muted" style={{ textDecoration: 'none' }}>Sarah's Talkers</Link>
               <Link to="/messages" className="muted" style={{ textDecoration: 'none' }}>Messages</Link>
               <Link to="/gift" className="muted" style={{ textDecoration: 'none' }}>Gift</Link>
+              {isAdmin && <Link to="/editor" style={{ textDecoration: 'none', color: 'var(--rose-deep)', fontWeight: 700 }}>Editor</Link>}
             </>
           ) : (
             <>
               <Link to="/redeem" className="muted" style={{ textDecoration: 'none' }}>Redeem a code</Link>
               <Link to="/gift" className="muted" style={{ textDecoration: 'none' }}>Gift</Link>
+              {isAdmin && <Link to="/editor" style={{ textDecoration: 'none', color: 'var(--rose-deep)', fontWeight: 700 }}>Editor</Link>}
             </>
           )}
         </nav>
