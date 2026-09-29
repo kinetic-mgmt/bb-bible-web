@@ -6,6 +6,7 @@ import Home from './pages/Home.jsx'
 import Show from './pages/Show.jsx'
 import Talkers from './pages/Talkers.jsx'
 import Gift from './pages/Gift.jsx'
+import Buy from './pages/Buy.jsx'
 import Redeem from './pages/Redeem.jsx'
 import Dms from './pages/Dms.jsx'
 import Editor from './pages/Editor.jsx'
@@ -45,6 +46,7 @@ export default function App() {
           {isAdmin && <Route path="/editor" element={<Editor />} />}
           {!hasPass && <Route path="/" element={<Paywall email={session.user?.email} />} />}
           <Route path="/gift" element={<Gift />} />
+          <Route path="/buy" element={<Buy />} />
           <Route path="/redeem" element={<Redeem />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
@@ -79,6 +81,7 @@ function Header({ email, hasPass, isAdmin }) {
             </>
           ) : (
             <>
+              <Link to="/buy" style={{ textDecoration: 'none', color: 'var(--rose-deep)', fontWeight: 700 }}>Get all-access</Link>
               <Link to="/redeem" className="muted" style={{ textDecoration: 'none' }}>Redeem a code</Link>
               <Link to="/gift" className="muted" style={{ textDecoration: 'none' }}>Gift</Link>
               {isAdmin && <Link to="/editor" style={{ textDecoration: 'none', color: 'var(--rose-deep)', fontWeight: 700 }}>Editor</Link>}
@@ -105,7 +108,8 @@ function Paywall({ email }) {
         Redeem a gift someone sent you, or get all-access to unlock everything.
       </p>
       <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginTop: 22 }}>
-        <Link to="/redeem" className="btn" style={{ background: 'linear-gradient(135deg, var(--rose), var(--rose-deep))', color: '#fff', textDecoration: 'none' }}>Redeem a gift code</Link>
+        <Link to="/buy" className="btn" style={{ background: 'linear-gradient(135deg, var(--rose), var(--rose-deep))', color: '#fff', textDecoration: 'none' }}>Get all-access</Link>
+        <Link to="/redeem" className="btn btn-outline" style={{ textDecoration: 'none' }}>Redeem a gift code</Link>
         <Link to="/gift" className="btn btn-outline" style={{ textDecoration: 'none' }}>Give a gift</Link>
       </div>
       <p className="muted" style={{ fontSize: 12, marginTop: 22 }}>
